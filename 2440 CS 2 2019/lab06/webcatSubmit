@@ -1,0 +1,27 @@
+#!/bin/bash
+# Original by RMP
+# Modified by CKW
+
+# Grab list of open assignments delimited by newlines
+labs_string=$(java -jar webcat-submitter-1.0.5.jar -t http://student.cs.appstate.edu:8080/Web-CAT/WebObjects/Web-CAT.woa/wa/assignments/eclipse -l)
+
+# Break assignments list into array
+readarray -t labs <<<"$labs_string"
+
+# Loop over array and print elements with their indicies
+for index in "${!labs[@]}"; do
+	echo "$index) ${labs[index]}"
+done
+
+# Read an index from the user
+echo -n "Enter the number to the left of the assignment: "
+read number
+text="${labs[number]}"
+echo "You entered: \"$number\", which is $text"
+
+# Get user credentials
+read -p "Enter user name: " user
+read -s -p "Enter password: " pass
+
+# Submit to webcat
+java -jar webcat-submitter-1.0.5.jar -t http://student.cs.appstate.edu:8080/Web-CAT/WebObjects/Web-CAT.woa/wa/assignments/eclipse -u "$user" -p "$pass" -a "$text" $@
